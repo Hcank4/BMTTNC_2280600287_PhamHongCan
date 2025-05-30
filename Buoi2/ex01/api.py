@@ -1,9 +1,13 @@
 from flask import Flask, request, jsonify
 from cipher.caesar import CaesarCipher
+from cipher.vigenere import VigenereCipher
+from cipher.playfair import PlayFairCipher
+from cipher.railfence import RailFenceCipher
+from cipher.transposition import TranspositionCipher 
 
 app = Flask(__name__)
 
-# CIPHERCIPHER
+# Caesar Cipher
 caesar_cipher = CaesarCipher()
 
 @app.route("/api/caesar/encrypt", methods=["POST"])
@@ -22,65 +26,91 @@ def caesar_decrypt():
     decrypted_text = caesar_cipher.decrypt_text(cipher_text, key)
     return jsonify({'decrypted_message': decrypted_text})
 
-# VIGENERE
-vigenere = vigenere_cipher.VigenereCipher()
+# Vigenere Cipher
+vigenere_cipher = VigenereCipher()
 
 @app.route("/api/vigenere/encrypt", methods=["POST"])
 def vigenere_encrypt():
-    data = request.get_json()
-    return jsonify({"encrypted_text": vigenere.vigenere_encrypt(data["plain_text"], data["key"])})
+    data = request.json
+    plain_text = data['plain_text']
+    key = data['key']
+    encrypted_text = vigenere_cipher.vigenere_encrypt(plain_text, key)  # Assuming method exists
+    return jsonify({'encrypted_message': encrypted_text})
 
 @app.route("/api/vigenere/decrypt", methods=["POST"])
 def vigenere_decrypt():
-    data = request.get_json()
-    return jsonify({"decrypted_text": vigenere.vigenere_decrypt(data["cipher_text"], data["key"])})
+    data = request.json
+    cipher_text = data['cipher_text']
+    key = data['key']
+    decrypted_text = vigenere_cipher.vigenere_decrypt(cipher_text, key)  # Assuming method exists
+    return jsonify({'decrypted_message': decrypted_text})
 
-# RAILFENCE
-railfence = railfence_cipher.RailFenceCipher()
+# Railfence Cipher
+railfence_cipher = RailFenceCipher()
 
 @app.route("/api/railfence/encrypt", methods=["POST"])
 def railfence_encrypt():
-    data = request.get_json()
-    return jsonify({"encrypted_text": railfence.rail_fence_encrypt(data["plain_text"], int(data["key"]))})
+    data = request.json
+    plain_text = data['plain_text']
+    key = int(data['key'])
+    encrypted_text = railfence_cipher.rail_fence_encrypt(plain_text, key)  # Assuming method exists
+    return jsonify({'encrypted_message': encrypted_text})
 
 @app.route("/api/railfence/decrypt", methods=["POST"])
 def railfence_decrypt():
-    data = request.get_json()
-    return jsonify({"decrypted_text": railfence.rail_fence_decrypt(data["cipher_text"], int(data["key"]))})
+    data = request.json
+    cipher_text = data['cipher_text']
+    key = int(data['key'])
+    decrypted_text = railfence_cipher.rail_fence_decrypt(cipher_text, key)  # Assuming method exists
+    return jsonify({'decrypted_message': decrypted_text})
 
-# PLAYFAIR
-playfair = playfair_cipher.PlayFairCipher()
+# Playfair Cipher
+playfair_cipher = PlayFairCipher()
 
 @app.route("/api/playfair/creatematrix", methods=["POST"])
 def playfair_create():
-    data = request.get_json()
-    return jsonify({"playfair_matrix": playfair.create_playfair_matrix(data["key"])})
+    data = request.json
+    key = data['key']
+    matrix = playfair_cipher.create_playfair_matrix(key)
+    return jsonify({'playfair_matrix': matrix})
 
 @app.route("/api/playfair/encrypt", methods=["POST"])
 def playfair_encrypt():
-    data = request.get_json()
-    matrix = playfair.create_playfair_matrix(data["key"])
-    return jsonify({"encrypted_text": playfair.playfair_encrypt(data["plain_text"], matrix)})
+    data = request.json
+    plain_text = data['plain_text']
+    key = data['key']
+    matrix = playfair_cipher.create_playfair_matrix(key)
+    encrypted_text = playfair_cipher.playfair_encrypt(plain_text, matrix)  # Assuming method exists
+    return jsonify({'encrypted_message': encrypted_text})
 
 @app.route("/api/playfair/decrypt", methods=["POST"])
 def playfair_decrypt():
-    data = request.get_json()
-    matrix = playfair.create_playfair_matrix(data["key"])
-    return jsonify({"decrypted_text": playfair.playfair_decrypt(data["cipher_text"], matrix)})
+    data = request.json
+    cipher_text = data['cipher_text']
+    key = data['key']
+    matrix = playfair_cipher.create_playfair_matrix(key)
+    decrypted_text = playfair_cipher.playfair_decrypt(cipher_text, matrix)  # Assuming method exists
+    return jsonify({'decrypted_message': decrypted_text})
 
-# TRANSPOSITION
-trans = transposition_cipher.TranspositionCipher()
+# Transposition Cipher
+transposition_cipher = TranspositionCipher()
 
 @app.route("/api/transposition/encrypt", methods=["POST"])
-def trans_encrypt():
+def transposition_encrypt():
     data = request.get_json()
-    return jsonify({"encrypted_text": trans.encrypt(data["plain_text"], int(data["key"]))})
+    plain_text = data['plain_text']
+    key = int(data['key'])
+    encrypted_text = transposition_cipher.encrypt(plain_text, key)  # Assuming method exists
+    return jsonify({'encrypted_message': encrypted_text})
 
 @app.route("/api/transposition/decrypt", methods=["POST"])
-def trans_decrypt():
+def transposition_decrypt():
     data = request.get_json()
-    return jsonify({"decrypted_text": trans.decrypt(data["cipher_text"], int(data["key"]))})
+    cipher_text = data['cipher_text']
+    key = int(data['key'])
+    decrypted_text = transposition_cipher.decrypt(cipher_text, key)  # Assuming method exists
+    return jsonify({'decrypted_message': decrypted_text})
 
-#main function
+# Main function
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
